@@ -32,9 +32,9 @@ class os_t:
 		if ((key >= ord('a')) and (key <= ord('z'))) or ((key >= ord('A')) and (key <= ord('Z'))) or ((key >= ord('0')) and (key <= ord('9'))) or (key == ord(' ')) or (key == ord('-')) or (key == ord('_')) or (key == ord('.')):
 			self.console_str += chr(key) #junta a string do console com o que o usuario digitou
 			self.terminal.console_print("\r" + self.console_str) #imprimir o que esta na variavel string do console
-			# \r serve para retornar o valor real da string (tambem para nao haver erros com caracteres especiais)
+			
 		
-		elif key == curses.KEY_BACKSPACE:
+		elif (key == curses.KEY_BACKSPACE):
 			self.console_str = self.console_str[:-1] #remove o ultimo caractere da string do console
 			self.terminal.console_print("\r" + self.console_str) #imprimir o que esta na variavel string do console
 			return
@@ -47,45 +47,33 @@ class os_t:
 #2
 			else:
 				self.terminal.console_print("\n")
-				#metodo aqui
-				if(self.console_str == "exit"):
-					exit() # caso o usuario digite "exit" ira sair do sistema operacional
-				
-				if(self.console_str[0:3] == "run"):
-					# self.terminal.console_print(self.console_str[3:])
-					self.command = self.console_str[4:]
-					self.syscall()
-				
+				self.interrupt_command()
 				self.console_str = "" #zera a string 
 				
 			return
 
+	def interrupt_command(self):
+		if(self.console_str == "exit"):
+			self.panic()
+		
+		if(self.console_str[0:3] == "run"):
+			self.command = self.console_str[4:]
+			self.syscall()
+
+
 	def handle_interrupt (self, interrupt):
 		# 1
-		if interrupt == pycfg.INTERRUPT_KEYBOARD: #verificar se e interrupcao de teclado, caso seja, vai pro metodo
+		if (interrupt == pycfg.INTERRUPT_KEYBOARD): #verificar se e interrupcao de teclado, caso seja, vai pro metodo
 			self.interrupt_keyboard()
+		elif (interrupt == pycfg.INTERRUPT_MEMORY_PROTECTION_FAULT):
+			self.terminal.console_print("Interrupção de falha de proteção geral não implementada")
+		elif (interrupt == pycfg.INTERRUPT_TIMER):
+			self.terminal.console_print("Interrupção de temporizador não implementada")
 		return
 
 	def syscall (self):
-		self.terminal.console_print("Carregando o processo {}".format(self.command))
-
-		if(self.command == "idle"): 
-			self.terminal.app_print("idle nao foi implementado")
-		elif(self.command == "perfect-squares"):
-			self.terminal.app_print("perfect-squares nao foi implementado")
-		elif(self.command == "print"):
-			self.terminal.app_print("print nao foi implementado")
-		elif(self.command == "print2"):
-			self.terminal.app_print("print2 nao foi implementado")
-		elif(self.command == "test-gpf"):
-			self.terminal.app_print("test-gpf nao foi implementado")
-		elif(self.command == "teste"):
-			self.terminal.app_print("teste nao foi implementado")
-		else:
-			self.terminal.console_print("O comando {} nao existe".format(self.command))
-
+		self.terminal.console_print("As chamadas de sistemas não foram implementadas.")
 		self.command = ""
-
 		return
 #2
 
